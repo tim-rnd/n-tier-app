@@ -1244,15 +1244,17 @@
                         "Fn::Base64" : {
                             "Fn::Join":["", [
                                 "#!/bin/bash \n",
-                                "yum update -y && \n",
-                                "amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2 && \n",
-                                "yum install -y httpd && \n",
-                                "systemctl enable httpd.service  \n",
-                                "systemctl start httpd  \n",
-                                "cd /var/www/html \n",
-                                "wget  https://us-west-2-tcprod.s3.amazonaws.com/courses/ILT-TF-200-ARCHIT/v7.3.2.prod-6d2a9850/lab-2-VPC/scripts/instanceData.zip \n", 
-                                "unzip instanceData.zip \n",
-                                "echo \"<html><body><h1><span style=\"color:#FFB570\">Hello from EC2 web instance `curl http://169.254.169.254/latest/meta-data/instance-id`</span></h1><p>This server acts as an Apache nginx server</p>\n</body>\n</html>\" > index.html \n"
+                                "yum –y install httpd \n",
+                                "amazon-linux-extras install -y php7.2 \n",
+                                "cd /tmp \n",
+                                "wget https://us-west-2-tcprod.s3.us-west-2.amazonaws.com/courses/ILT-TF-200-ARCHIT/v7.3.2.prod-6d2a9850/lab-4-HA/scripts/inventory-app.zip  \n",
+                                "unzip inventory-app.zip -d /var/www/html/  \n",
+                                "wget https://github.com/aws/aws-sdk-php/releases/download/3.62.3/aws.zip  \n",
+                                "unzip -q aws.zip -d /var/www/html  \n", 
+                                "echo \"<html><body><h1><span style=\"color:#FFB570\">Hello from EC2 web instance #1</span></h1><p>This server acts as an Apache nginx server</p>\n</body>\n</html>\" > index.html \n",     
+                                "mv index.html /var/www/html \n",  
+                                "systemctl start httpd.service  \n",
+                                "systemctl enable httpd.service  \n"
                             ]
                         ]
                         }
