@@ -49,21 +49,21 @@
             "Default" : "sandbx_key"
         },
         "DBClusterIdentifier": {
-            "Default": "democluster192",
-            "Description": "Database Instance Identifier name",
+            "Default": "aurora-mysql-cluster",
+            "Description": "Cluster Identifier Name",
             "Type": "String",
             "MinLength": "1",
-            "MaxLength": "16",
-            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
-            "ConstraintDescription": "The name for the DB instance.Must contain 1���������63 alphanumeric characters or hyphens. First character must be a letter.\nCan't end with a hyphen or contain two consecutive hyphens.\nMust be unique for all DB instances per AWS account, per AWS Region. will be converted to lowercase."
+            "MaxLength": "64",
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9[-]]*",
+            "ConstraintDescription": "The name for the Cluster .Must contain 1-63 alphanumeric characters or hyphens. First character must be a letter.\nCan't end with a hyphen or contain two consecutive hyphens.\nMust be unique for all DB instances per AWS account, per AWS Region. will be converted to lowercase."
         },
         "DBName": {
-            "Default": "AppDatabase",
+            "Default": "demodb",
             "Description": "MySQL database name",
             "Type": "String",
             "MinLength": "1",
             "MaxLength": "64",
-            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9[-]]*",
             "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
         },
         "DBUser": {
@@ -86,14 +86,23 @@
             "AllowedPattern": "[a-zA-Z0-9]*",
             "ConstraintDescription": "must contain only alphanumeric characters."
         },
-        "DBAllocatedStorage": {
-            "Default": "5",
-            "Description": "The size of the database (Gb)",
+        "AppPort": {
+            "Default": "80",
+            "Description": "The Application port",
             "Type": "Number",
-            "MinValue": "5",
-            "MaxValue": "1024",
-            "ConstraintDescription": "must be between 5 and 1024Gb."
+            "MinValue": "0",
+            "MaxValue": "65535",
+            "ConstraintDescription": "must be between 0 and 65535."
         },
+        "SshPort": {
+            "Default": "22",
+            "Description": "The SSH port",
+            "Type": "Number",
+            "MinValue": "0",
+            "MaxValue": "65535",
+            "ConstraintDescription": "must be between 0 and 65535."
+        },
+
         "DBPort": {
             "Default": "3306",
             "Description": "The database cluster port",
@@ -105,24 +114,9 @@
         "DBInstanceClass": {
             "Description": "The database instance type",
             "Type": "String",
-            "Default": "db.r6g.2xlarge",
+            "Default": "db.r5.large",
             "AllowedValues": [
-                "db.m5d.large",
-                "db.m5d.xlarge",
-                "db.m5d.2xlarge",
-                "db.m5d.4xlarge",
-                "db.m5d.8xlarge",
-                "db.m5d.12xlarge",
-                "db.m5d.16xlarge",
-                "db.m5d.24xlarge",
-                "db.m6gd.large",
-                "db.m6gd.xlarge",
-                "db.m6gd.2xlarge",
-                "db.m6gd.4xlarge",
-                "db.m6gd.8xlarge",
-                "db.m6gd.12xlarge",
-                "db.m6gd.16xlarge",
-                "db.r6g.2xlarge"
+                "db.r5.large" 
             ],
             "ConstraintDescription": "must select a valid database instance type."
         },
@@ -188,11 +182,9 @@
                 "d2.2xlarge",
                 "d2.4xlarge",
                 "d2.8xlarge",
-                "hi1.4xlarge",
                 "hs1.8xlarge",
                 "cr1.8xlarge",
-                "cc2.8xlarge",
-                "cg1.4xlarge"
+                "cc2.8xlarge"
             ],
             "ConstraintDescription": "must be a valid EC2 instance type."
         },
@@ -212,422 +204,7 @@
         }
     },
     "Mappings": {
-        "AWSInstanceType2Arch": {
-            "t1.micro": {
-                "Arch": "HVM64"
-            },
-            "t2.nano": {
-                "Arch": "HVM64"
-            },
-            "t2.micro": {
-                "Arch": "HVM64"
-            },
-            "t2.small": {
-                "Arch": "HVM64"
-            },
-            "t2.medium": {
-                "Arch": "HVM64"
-            },
-            "t2.large": {
-                "Arch": "HVM64"
-            },
-            "m1.small": {
-                "Arch": "HVM64"
-            },
-            "m1.medium": {
-                "Arch": "HVM64"
-            },
-            "m1.large": {
-                "Arch": "HVM64"
-            },
-            "m1.xlarge": {
-                "Arch": "HVM64"
-            },
-            "m2.xlarge": {
-                "Arch": "HVM64"
-            },
-            "m2.2xlarge": {
-                "Arch": "HVM64"
-            },
-            "m2.4xlarge": {
-                "Arch": "HVM64"
-            },
-            "m3.medium": {
-                "Arch": "HVM64"
-            },
-            "m3.large": {
-                "Arch": "HVM64"
-            },
-            "m3.xlarge": {
-                "Arch": "HVM64"
-            },
-            "m3.2xlarge": {
-                "Arch": "HVM64"
-            },
-            "m4.large": {
-                "Arch": "HVM64"
-            },
-            "m4.xlarge": {
-                "Arch": "HVM64"
-            },
-            "m4.2xlarge": {
-                "Arch": "HVM64"
-            },
-            "m4.4xlarge": {
-                "Arch": "HVM64"
-            },
-            "m4.10xlarge": {
-                "Arch": "HVM64"
-            },
-            "c1.medium": {
-                "Arch": "HVM64"
-            },
-            "c1.xlarge": {
-                "Arch": "HVM64"
-            },
-            "c3.large": {
-                "Arch": "HVM64"
-            },
-            "c3.xlarge": {
-                "Arch": "HVM64"
-            },
-            "c3.2xlarge": {
-                "Arch": "HVM64"
-            },
-            "c3.4xlarge": {
-                "Arch": "HVM64"
-            },
-            "c3.8xlarge": {
-                "Arch": "HVM64"
-            },
-            "c4.large": {
-                "Arch": "HVM64"
-            },
-            "c4.xlarge": {
-                "Arch": "HVM64"
-            },
-            "c4.2xlarge": {
-                "Arch": "HVM64"
-            },
-            "c4.4xlarge": {
-                "Arch": "HVM64"
-            },
-            "c4.8xlarge": {
-                "Arch": "HVM64"
-            },
-            "g2.2xlarge": {
-                "Arch": "HVMG2"
-            },
-            "g2.8xlarge": {
-                "Arch": "HVMG2"
-            },
-            "r3.large": {
-                "Arch": "HVM64"
-            },
-            "r3.xlarge": {
-                "Arch": "HVM64"
-            },
-            "r3.2xlarge": {
-                "Arch": "HVM64"
-            },
-            "r3.4xlarge": {
-                "Arch": "HVM64"
-            },
-            "r3.8xlarge": {
-                "Arch": "HVM64"
-            },
-            "i2.xlarge": {
-                "Arch": "HVM64"
-            },
-            "i2.2xlarge": {
-                "Arch": "HVM64"
-            },
-            "i2.4xlarge": {
-                "Arch": "HVM64"
-            },
-            "i2.8xlarge": {
-                "Arch": "HVM64"
-            },
-            "d2.xlarge": {
-                "Arch": "HVM64"
-            },
-            "d2.2xlarge": {
-                "Arch": "HVM64"
-            },
-            "d2.4xlarge": {
-                "Arch": "HVM64"
-            },
-            "d2.8xlarge": {
-                "Arch": "HVM64"
-            },
-            "hi1.4xlarge": {
-                "Arch": "HVM64"
-            },
-            "hs1.8xlarge": {
-                "Arch": "HVM64"
-            },
-            "cr1.8xlarge": {
-                "Arch": "HVM64"
-            },
-            "cc2.8xlarge": {
-                "Arch": "HVM64"
-            }
-        },
-        "AWSInstanceType2NATArch": {
-            "t1.micro": {
-                "Arch": "NATHVM64"
-            },
-            "t2.nano": {
-                "Arch": "NATHVM64"
-            },
-            "t2.micro": {
-                "Arch": "NATHVM64"
-            },
-            "t2.small": {
-                "Arch": "NATHVM64"
-            },
-            "t2.medium": {
-                "Arch": "NATHVM64"
-            },
-            "t2.large": {
-                "Arch": "NATHVM64"
-            },
-            "m1.small": {
-                "Arch": "NATHVM64"
-            },
-            "m1.medium": {
-                "Arch": "NATHVM64"
-            },
-            "m1.large": {
-                "Arch": "NATHVM64"
-            },
-            "m1.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m2.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m2.2xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m2.4xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m3.medium": {
-                "Arch": "NATHVM64"
-            },
-            "m3.large": {
-                "Arch": "NATHVM64"
-            },
-            "m3.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m3.2xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m4.large": {
-                "Arch": "NATHVM64"
-            },
-            "m4.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m4.2xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m4.4xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "m4.10xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c1.medium": {
-                "Arch": "NATHVM64"
-            },
-            "c1.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c3.large": {
-                "Arch": "NATHVM64"
-            },
-            "c3.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c3.2xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c3.4xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c3.8xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c4.large": {
-                "Arch": "NATHVM64"
-            },
-            "c4.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c4.2xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c4.4xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "c4.8xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "g2.2xlarge": {
-                "Arch": "NATHVMG2"
-            },
-            "g2.8xlarge": {
-                "Arch": "NATHVMG2"
-            },
-            "r3.large": {
-                "Arch": "NATHVM64"
-            },
-            "r3.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "r3.2xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "r3.4xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "r3.8xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "i2.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "i2.2xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "i2.4xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "i2.8xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "d2.xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "d2.2xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "d2.4xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "d2.8xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "hi1.4xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "hs1.8xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "cr1.8xlarge": {
-                "Arch": "NATHVM64"
-            },
-            "cc2.8xlarge": {
-                "Arch": "NATHVM64"
-            }
-        },
-        "AWSRegionArch2AMI": {
-            "af-south-1": {
-                "HVM64": "ami-064cc455f8a1ef504",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "ap-east-1": {
-                "HVM64": "ami-f85b1989",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "ap-northeast-1": {
-                "HVM64": "ami-0b2c2a754d5b4da22",
-                "HVMG2": "ami-09d0e0e099ecabba2"
-            },
-            "ap-northeast-2": {
-                "HVM64": "ami-0493ab99920f410fc",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "ap-northeast-3": {
-                "HVM64": "ami-01344f6f63a4decc1",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "ap-south-1": {
-                "HVM64": "ami-03cfb5e1fb4fac428",
-                "HVMG2": "ami-0244c1d42815af84a"
-            },
-            "ap-southeast-1": {
-                "HVM64": "ami-0ba35dc9caf73d1c7",
-                "HVMG2": "ami-0e46ce0d6a87dc979"
-            },
-            "ap-southeast-2": {
-                "HVM64": "ami-0ae99b503e8694028",
-                "HVMG2": "ami-0c0ab057a101d8ff2"
-            },
-            "ca-central-1": {
-                "HVM64": "ami-0803e21a2ec22f953",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "cn-north-1": {
-                "HVM64": "ami-07a3f215cc90c889c",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "cn-northwest-1": {
-                "HVM64": "ami-0a3b3b10f714a0ff4",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "eu-central-1": {
-                "HVM64": "ami-0474863011a7d1541",
-                "HVMG2": "ami-0aa1822e3eb913a11"
-            },
-            "eu-north-1": {
-                "HVM64": "ami-0de4b8910494dba0f",
-                "HVMG2": "ami-32d55b4c"
-            },
-            "eu-south-1": {
-                "HVM64": "ami-08427144fe9ebdef6",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "eu-west-1": {
-                "HVM64": "ami-015232c01a82b847b",
-                "HVMG2": "ami-0d5299b1c6112c3c7"
-            },
-            "eu-west-2": {
-                "HVM64": "ami-0765d48d7e15beb93",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "eu-west-3": {
-                "HVM64": "ami-0caf07637eda19d9c",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "me-south-1": {
-                "HVM64": "ami-0744743d80915b497",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "sa-east-1": {
-                "HVM64": "ami-0a52e8a6018e92bb0",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "us-east-1": {
-                "HVM64": "ami-032930428bf1abbff",
-                "HVMG2": "ami-0aeb704d503081ea6"
-            },
-            "us-east-2": {
-                "HVM64": "ami-027cab9a7bf0155df",
-                "HVMG2": "NOT_SUPPORTED"
-            },
-            "us-west-1": {
-                "HVM64": "ami-088c153f74339f34c",
-                "HVMG2": "ami-0a7fc72dc0e51aa77"
-            },
-            "us-west-2": {
-                "HVM64": "ami-0f3b366cff2e46862",
-                "HVMG2": "ami-0fe84a5b4563d8f27"
-            }
-        }
+
     },
     "Resources": {
         "VPC": {
@@ -1056,13 +633,19 @@
         "ALBSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
-                "GroupName": "ALB-SG",
+                "GroupName": {
+                    "Fn::Sub": "${EnvName} ALB-SG"
+                },
                 "GroupDescription": "Enable HTTP access via port 80 ",
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": {
+                            "Ref": "AppPort"
+                        },
+                        "ToPort": {
+                            "Ref": "AppPort"
+                        },
                         "CidrIp": "0.0.0.0/0"
                     }
                 ],
@@ -1071,23 +654,15 @@
                 }
             }
         },
-        "AppEC2SSMProfile": {
-            "Type": "AWS::IAM::InstanceProfile",
-            "Properties": {
-                "InstanceProfileName": "AppEC2SSMProfile",
-                "Path": "/",
-                "Roles": [
-                    "EC2SSMProfile"
-                ]
-            }
-        },
         "ALBTargetGroup": {
             "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
             "Properties": {
                 "HealthCheckIntervalSeconds": 10,
                 "HealthCheckTimeoutSeconds": 5,
                 "HealthyThresholdCount": 2,
-                "Port": 80,
+                "Port": {
+                    "Ref": "AppPort"
+                },
                 "Protocol": "HTTP",
                 "UnhealthyThresholdCount": 5,
                 "VpcId": {
@@ -1117,7 +692,9 @@
         "ApplicationLoadBalancer": {
             "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
             "Properties": {
-                "Name" : "AppLoadBalancer",
+                "Name" : {
+                    "Fn::Sub": "${EnvName}-ALB"
+                },
                 "IpAddressType": "ipv4",
                 "SecurityGroups": [{
                     "Ref": "ALBSecurityGroup"
@@ -1152,7 +729,9 @@
                 "LoadBalancerArn": {
                     "Ref": "ApplicationLoadBalancer"
                 },
-                "Port": "80",
+                "Port": {
+                    "Ref": "AppPort"
+                },
                 "Protocol": "HTTP"
             },
             "Metadata": {
@@ -1164,12 +743,19 @@
         "AppServerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
+                "GroupName" : {
+                    "Fn::Sub":  "${EnvName} AppServerSecGroup"
+                },
                 "GroupDescription": "Enable HTTP access via port 80 locked down to the ELB and SSH access",
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": {
+                            "Ref": "AppPort"
+                        },
+                        "ToPort": {
+                            "Ref": "AppPort"
+                        },
                         "SourceSecurityGroupId": {
                             "Fn::Select": [
                                 0,
@@ -1184,8 +770,12 @@
                     },
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "22",
-                        "ToPort": "22",
+                        "FromPort": {
+                            "Ref": "SshPort"
+                        },
+                        "ToPort": {
+                            "Ref": "SshPort"
+                        },
                         "CidrIp": {
                             "Ref": "SSHSrcLocation"
                         }
@@ -1201,12 +791,82 @@
                 }
             }
         },
+        "AppServerSSMPolicy": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "AllowEC2InstanceSSM",
+                            "Effect": "Allow",
+                            "Action": [
+                                "iam:ListAccountAliases",
+                                "iam:ListUsers",
+                                "iam:GetAccountSummary"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            }
+        },
+        "AppServerRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName" : {
+                    "Fn::Sub":  "${EnvName}-AppServerSSMRole"
+                },
+                "Description" : "Role for the AppServer to enable SSM",
+                "AssumeRolePolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Principal": {
+                                        "Service": [
+                                            "ec2.amazonaws.com"
+                                        ]
+                                    },
+                                    "Action": [
+                                        "sts:AssumeRole"
+                                    ]
+                                }
+                            ]
+                        },
+                "Path": "/",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+                    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+                ]
+            }
+        },
+        "AppServerProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "InstanceProfileName" :{
+                    "Fn::Sub":  "${EnvName}-EC2SSMProfile"
+                },
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "AppServerRole"
+                    }
+                        ]
+                    }
+            },
+
         "AppServerLaunchTemplate": {
             "Type": "AWS::EC2::LaunchTemplate",
             "Properties": {
-                "LaunchTemplateName": "AppServerLaunchTemplate",
+
+                "LaunchTemplateName": {
+                    "Fn::Sub":  "${EnvName}-AppServerLaunchTemplate"
+                },
                 "LaunchTemplateData": {
-                    "InstanceType": "t2.small",
+                    "InstanceType": {
+                        "Ref": "InstanceType"
+                    },
                     "ImageId":  "ami-0f3b366cff2e46862",
                     "KeyName": {
                         "Ref": "KeyName"
@@ -1214,7 +874,7 @@
                     "IamInstanceProfile": {
                         "Arn": {
                             "Fn::GetAtt": [
-                                "AppEC2SSMProfile",
+                                "AppServerProfile",
                                 "Arn"
                             ]
                         }
@@ -1253,7 +913,9 @@
             "Type": "AWS::AutoScaling::AutoScalingGroup",
             "DependsOn":"VPC",
             "Properties": {
-                "AutoScalingGroupName": "AppASG",
+                "AutoScalingGroupName": {
+                    "Fn::Sub": "${EnvName} AppASG"
+                },
                 "VPCZoneIdentifier": [
                     {
                         "Ref": "AppSubnet1"
@@ -1289,7 +951,9 @@
             "Type": "AWS::RDS::DBSubnetGroup",
             "Properties": {
                 "DBSubnetGroupDescription": "Database Subnet Group",
-                "DBSubnetGroupName": "DBSubnetGroup",
+                "DBSubnetGroupName": {
+                    "Fn::Sub":  "${EnvName} DBSubnetGroup"
+                },
                 "SubnetIds": [
                     {
                         "Ref": "DBSubnet1"
@@ -1308,12 +972,19 @@
         "DBSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
+                "GroupName" : {
+                    "Fn::Sub":  "${EnvName} DBSecGroup"
+                },
                 "GroupDescription": "Open database for access",
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "3306",
-                        "ToPort": "3306",
+                        "FromPort": {
+                            "Ref": "DBPort"
+                        },
+                        "ToPort": {
+                            "Ref": "DBPort"
+                        },
                         "SourceSecurityGroupId": {
                             "Ref": "AppServerSecurityGroup"
                         }
@@ -1333,7 +1004,8 @@
             "Type": "AWS::RDS::DBClusterParameterGroup",
             "Properties": {
                 "Description": "CloudFormation Sample Aurora Cluster Parameter Group",
-                "Family": "aurora8.0",
+
+                "Family": "aurora-mysql8.0",
                 "Parameters": {
                     "time_zone": "US/Pacific"
                 }
@@ -1343,7 +1015,7 @@
             "Type": "AWS::RDS::DBParameterGroup",
             "Properties": {
                 "Description": "CloudFormation Sample Aurora Parameter Group",
-                "Family": "8.0.mysql_aurora.3.05.1",
+                "Family": "aurora-mysql8.0",
                 "Parameters": {
                     "sql_mode": "IGNORE_SPACE",
                     "max_allowed_packet": 1024,
@@ -1352,43 +1024,55 @@
             }},
             "RDSDBInstance1": {
                 "Type": "AWS::RDS::DBInstance",
+                "UpdateReplacePolicy" : "Delete",
+                "DeletionPolicy":"Delete",
                 "Properties": {
                     "DBParameterGroupName": {
                         "Ref": "RDSDBParameterGroup"
                     },
                     "Engine": "aurora-mysql",
+                    "DBInstanceIdentifier": {
+                        "Fn::Sub":  "${DBName}1"
+                    } ,
                     "DBClusterIdentifier": {
                         "Ref": "AuroraCluster"
                     },
                     "PubliclyAccessible": "true",
-                    "DBInstanceClass": "db.r3.xlarge"
+                    "DBInstanceClass": {
+                        "Ref": "DBInstanceClass"
+                    } 
                 }
             },
             "RDSDBInstance2": {
                 "Type": "AWS::RDS::DBInstance",
+                "UpdateReplacePolicy" : "Delete",
+                "DeletionPolicy":"Delete",
                 "Properties": {
                     "DBParameterGroupName": {
                         "Ref": "RDSDBParameterGroup"
                     },
                     "Engine": "aurora-mysql",
+                    "DBInstanceIdentifier": {
+                        "Fn::Sub":  "${DBName}-2"
+                    } ,
                     "DBClusterIdentifier": {
                         "Ref": "AuroraCluster"
                     },
                     "PubliclyAccessible": "true",
-                    "DBInstanceClass": "db.r3.xlarge"
+
+                    "DBInstanceClass": {
+                        "Ref": "DBInstanceClass"
+                    } 
                 }
             },
         "AuroraCluster": {
             "Type": "AWS::RDS::DBCluster",
+            "UpdateReplacePolicy" : "Delete",
+            "DeletionPolicy":"Delete",
             "Properties": {
-                "AllocatedStorage": {
-                    "Ref": "DBAllocatedStorage"
-                },
                 "DBClusterParameterGroupName": {
                     "Ref": "RDSDBClusterParameterGroup"
                 },
-                "AssociatedRoles" : [],
-                "AutoMinorVersionUpgrade" : false,
                 "AvailabilityZones" : [
                     {"Fn::Select": [
                         0,
@@ -1402,18 +1086,18 @@
                             "Fn::GetAZs": ""
                         }
                     ]}
-                ]
-                ,
+                ],
+                "Engine": "aurora-mysql",
                 "BacktrackWindow" : 0,
                 "BackupRetentionPeriod" : 1,
                 "CopyTagsToSnapshot" : false,
                 "DatabaseName" : {
                     "Ref": "DBName"
                 },
-                "DBClusterIdentifier" : {
-                    "Ref": "DBClusterIdentifier"
+                "DBClusterIdentifier" : 
+                {
+                    "Fn::Sub":  "${EnvName}-${DBClusterIdentifier}"
                 },
-                "DBClusterInstanceClass" : "db.t4g.2xlarge",
                 "DBSubnetGroupName": {
                     "Ref": "DBSubnetGroup"
                 },
@@ -1425,14 +1109,11 @@
                 "MasterUserPassword": {
                     "Ref": "DBPassword"
                 },
-                "MonitoringInterval" : 0,
                 "NetworkType" : "IPV4",
-                "PerformanceInsightsEnabled" : false,
                 "Port" : {
                     "Ref": "DBPort"
                 },
-                "PreferredBackupWindow" : "02:10-04:30",
-                "PubliclyAccessible" : false,                
+       
                 "VpcSecurityGroupIds" : [ {
                     "Fn::GetAtt": [
                         "DBSecurityGroup",
