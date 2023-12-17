@@ -875,7 +875,15 @@
                   } ],
                   "IamInstanceProfile": {
                     "Ref": "AppServerProfile"
-                    }
+                    },
+                    "Tags": [
+                        {
+                            "Key": "Name",
+                            "Value": {
+                                "Fn::Sub":  "${EnvName}-BastionStation"
+                            }
+                        }
+                    ]
                 }
               },
         "AppServerLaunchTemplate": {
@@ -1054,7 +1062,7 @@
                     },
                     "Engine": "aurora-mysql",
                     "DBInstanceIdentifier": {
-                        "Fn::Sub":  "${DBName}1"
+                        "Fn::Sub":  "${DBName}-1"
                     } ,
                     "DBClusterIdentifier": {
                         "Ref": "AuroraCluster"
