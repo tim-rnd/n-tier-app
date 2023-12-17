@@ -1,6 +1,6 @@
 # n-tier app demo
 CloudFormation n-Tier Application demo
-
+All material on Google Drive tim.hass@hahlabs.com -> Projects
 # Prerequisites
 create a EC2 Key for ssh instance connection EC2->Key pair place it in KeyName field
 
@@ -55,7 +55,7 @@ What it does: (approximately 15m)
 2. Setup Security
    1 Role for SSM Profile, 1 Launch Template, SSGs for App Server, ALB, and DB Servers
 3. Launch Resources
-   1 ASG (2 min), 1 ALB, 1 Aurora MySQL Cluster (2 DB Instances multi zones)
+   1 ASG (2 min), 1 ALB, 1 Aurora MySQL Cluster (2 DB Instances multi zones), 1 Bastion Station
 
 
 # CloudFormation CLI
@@ -63,5 +63,7 @@ aws cloudformation create-stack --stack-name N-TIER-APP-021 \
 --template-body file:///home/aws/Projects/cloudFormation/n-tier-app/n-tier-app.json \
 --capabilities CAPABILITY_NAMED_IAM
 
-
+aws configure <- to specify target account>
 use ./create-stack.sh and ./delete-stack.sh <- to maintain counter tracking>
+use --parameters ParameterKey=KeyName,ParameterValue=<sandbx_key|demo_key> 
+ln -fs ./stack-id-<demo|rnd>.txt stack-id.txt

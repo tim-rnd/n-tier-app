@@ -5,7 +5,9 @@ echo $counter  > stack-id.txt
 counter=$(printf "%06d" $counter)
 stack_id=N-TIER-APP-$counter
 echo "Creating stack $stack_id:"
+# demo_key | sandbx_key
 aws cloudformation create-stack --stack-name N-TIER-APP-$counter \
 --template-body file:///home/aws/Projects/cloudFormation/n-tier-app/n-tier-app.json \
---capabilities CAPABILITY_NAMED_IAM
+--capabilities CAPABILITY_NAMED_IAM \
+--parameters ParameterKey=KeyName,ParameterValue=demo_key
 

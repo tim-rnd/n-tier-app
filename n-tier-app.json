@@ -658,7 +658,7 @@
             "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
             "Properties": {
                 "Name" : {
-                    "Fn::Sub": "${EnvName} ALB-TG"
+                    "Fn::Sub": "${EnvName}-ALB-TG"
                 },
                 "HealthCheckIntervalSeconds": 10,
                 "HealthCheckTimeoutSeconds": 5,
@@ -932,13 +932,14 @@
                                 "TOKEN=`curl -X PUT \"http://169.254.169.254/latest/api/token\" -H \"X-aws-ec2-metadata-token-ttl-seconds: 21600\"` \n",
                                 "curl -H \"X-aws-ec2-metadata-token: $TOKEN\" http://169.254.169.254/latest/meta-data/instance-id > instance_id.txt \n",
                                 "instance_id=`cat instance_id.txt` \n",
-                                "echo \"<html><body><h1><span style=\"color:$RANDOM\">Hello from EC2 web instance $instance_id</span></h1><p>This server acts as an N-Tier-Application Apache http server</p></body></html>\" > index.html \n"
+                                "random_color=$(printf \"%06x\"  $(($RANDOM%(255-0)*255*255))) \n",
+                                "echo \"<html><body><h1><span style=\"color:#$random_color\">Hello from EC2 web instance $instance_id</span></h1><p>This server acts as an N-Tier-Application Apache http server</p></body></html>\" > index.html \n"
                             ]
                         ]
                         }
                     }
                 },
-                "VersionDescription": "v3.0"
+                "VersionDescription": "v4.0 Amazon Linux 2023 random color"
             }
         },
 
