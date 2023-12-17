@@ -11,6 +11,9 @@ create a EC2 Key for ssh instance connection EC2->Key pair place it in KeyName f
 # Parameters
 
 InstanceType:
+Instance Types: https://awscli.amazonaws.com/v2/documentation/api/2.0.33/reference/ec2/describe-instance-types.html
+
+
  aws ec2 describe-instance-types --query "InstanceTypes[].InstanceType"
 > instanceTypes.txt
 
@@ -30,6 +33,16 @@ Valid Values:
  mysql
  postgres
 
+AMI Images:
+aws ec2 describe-images --query "Images[].{Architecture:Architecture,ImageId:ImageId,Platform:PlatformDetails,Name:Name}"
+Amazon Linux 2023:=>
+    {
+        "Architecture": "x86_64",
+        "ImageId": "ami-0c00eacddaea828c6",
+        "Platform": "Linux/UNIX",
+        "Name": "al2023-ami-2023.3.20231211.4-kernel-6.1-x86_64"
+    },
+
 
 for DB instance:
 1. use the console, to see the list of available instances per region
@@ -43,3 +56,9 @@ What it does: (approximately 15m)
    1 Role for SSM Profile, 1 Launch Template, SSGs for App Server, ALB, and DB Servers
 3. Launch Resources
    1 ASG (2 min), 1 ALB, 1 Aurora MySQL Cluster (2 DB Instances multi zones)
+
+
+# CloudFormation CLI
+aws cloudformation create-stack --stack-name N-TIER-APP-021 \
+--template-body file:///home/aws/Projects/cloudFormation/n-tier-app/n-tier-app.json \
+--capabilities CAPABILITY_NAMED_IAM

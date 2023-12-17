@@ -791,23 +791,29 @@
                 }
             }
         },
-        "AppServerSSMPolicy": {
-            "Type": "AWS::IAM::ManagedPolicy",
+        "BastionSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
-                "PolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Sid": "AllowEC2InstanceSSM",
-                            "Effect": "Allow",
-                            "Action": [
-                                "iam:ListAccountAliases",
-                                "iam:ListUsers",
-                                "iam:GetAccountSummary"
-                            ],
-                            "Resource": "*"
+                "GroupName" : {
+                    "Fn::Sub":  "${EnvName} BastionSecGroup"
+                },
+                "GroupDescription": "Enable SSH access",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": {
+                            "Ref": "SshPort"
+                        },
+                        "ToPort": {
+                            "Ref": "SshPort"
+                        },
+                        "CidrIp": {
+                            "Ref": "SSHSrcLocation"
                         }
-                    ]
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "VPC"
                 }
             }
         },
@@ -855,7 +861,23 @@
                         ]
                     }
             },
-
+        "BastionStation" : {
+                "Type" : "AWS::EC2::Instance",
+                "Properties" : {
+                  "ImageId": "ami-0c00eacddaea828c6",
+                  "InstanceType":"t2.micro",
+                  "KeyName" : { "Ref" : "KeyName" },
+                  "NetworkInterfaces": [ {
+                    "AssociatePublicIpAddress": "true",
+                    "DeviceIndex": "0",
+                    "GroupSet": [{ "Ref" : "BastionSecurityGroup" }],
+                    "SubnetId": { "Ref" : "PubSubnet2" }
+                  } ],
+                  "IamInstanceProfile": {
+                    "Ref": "AppServerProfile"
+                    }
+                }
+              },
         "AppServerLaunchTemplate": {
             "Type": "AWS::EC2::LaunchTemplate",
             "Properties": {
@@ -867,7 +889,7 @@
                     "InstanceType": {
                         "Ref": "InstanceType"
                     },
-                    "ImageId":  "ami-0f3b366cff2e46862",
+                    "ImageId":  "ami-0c00eacddaea828c6",
                     "KeyName": {
                         "Ref": "KeyName"
                     },
@@ -899,7 +921,7 @@
                                 "cd /var/www/html \n",
                                 "wget  https://us-west-2-tcprod.s3.amazonaws.com/courses/ILT-TF-200-ARCHIT/v7.3.2.prod-6d2a9850/lab-2-VPC/scripts/instanceData.zip \n", 
                                 "unzip instanceData.zip \n",
-                                "echo \"<html><body><h1><span style=\"color:#FFB570\">Hello from EC2 web instance `curl http://169.254.169.254/latest/meta-data/instance-id`</span></h1><p>This server acts as an Apache nginx server</p>\n</body>\n</html>\" > index.html \n"
+                                "echo \"<html><body><h1><span style=\"color:$RANDOM\">Hello from EC2 web instance `curl http://169.254.169.254/latest/meta-data/instance-id`</span></h1><p>This server acts as an N-Tier-Application Apache http server</p></body></html>\" > index.html \n"
                             ]
                         ]
                         }
