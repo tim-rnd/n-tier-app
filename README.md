@@ -62,3 +62,6 @@ What it does: (approximately 15m)
 aws cloudformation create-stack --stack-name N-TIER-APP-021 \
 --template-body file:///home/aws/Projects/cloudFormation/n-tier-app/n-tier-app.json \
 --capabilities CAPABILITY_NAMED_IAM
+
+
+use ./create-stack.sh and ./delete-stack.sh <- to maintain counter tracking>
