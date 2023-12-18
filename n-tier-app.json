@@ -871,6 +871,7 @@
                   "InstanceType":"t2.micro",
                   "KeyName" : { "Ref" : "KeyName" },
                   "NetworkInterfaces": [ {
+                    "Description" : "Public facing Network interface for Bastion Station",
                     "AssociatePublicIpAddress": "true",
                     "DeviceIndex": "0",
                     "GroupSet": [{ "Ref" : "BastionSecurityGroup" }],
