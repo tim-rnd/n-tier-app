@@ -66,3 +66,5 @@ ln -fs ./stack-id-<demo|poc|rnd|devops>.txt stack-id.txt
 
 aws s3 cp <file> s3://<bucket>/<folder>/ <- use / to copy to the folder
 aws s3 ls
+
+Updated Dec 29 2023
