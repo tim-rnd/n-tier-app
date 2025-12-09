@@ -9,8 +9,10 @@ create a EC2 Key for ssh instance connection EC2->Key pair place it in KeyName f
 2. n-tier-app -> Full stack of n-tier app
 
 # Parameters
-
-InstanceType:
+## instance Key
+ At this point, this cloudFormation script does not create or generate an instance key, you must create a key on the console (or upload a key) and use that key in the stack parameters
+ 
+## InstanceType
 Instance Types: https://awscli.amazonaws.com/v2/documentation/api/2.0.33/reference/ec2/describe-instance-types.html
 
 
@@ -33,7 +35,7 @@ Valid Values:
  mysql
  postgres
 
-AMI Images:
+## AMI Images
 aws ec2 describe-images --query "Images[].{Architecture:Architecture,ImageId:ImageId,Platform:PlatformDetails,Name:Name}"
 Amazon Linux 2023:=>
     {
@@ -44,7 +46,7 @@ Amazon Linux 2023:=>
     },
 
 
-for DB instance:
+## DB instance
 1. use the console, to see the list of available instances per region
 2. CLI<-- $aws rds describe-db-instances --query "DBInstances[].DBInstanceClass"
 
