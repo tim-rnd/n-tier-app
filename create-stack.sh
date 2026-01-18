@@ -1,18 +1,43 @@
 #!/bin/bash
-# to configure per account
-# 1. run ls -sf stack-id-<account>.txt stack-id.txt
-# 2. edit create-stack.sh change parameterKey/Value to approperiate key name
-[ ! -z $1 ] && PROFILE=${1,,} || PROFILE="default"
-export counter=`cat stack-id.txt`
-counter=$((counter + 1))
-echo $counter  > stack-id.txt
-counter=$(printf "%06d" $counter)
-stack_id=N-TIER-APP-$counter
-echo "Creating stack $stack_id: $PROFILE"
-# KeyName:= demo_key | sandbx_key | poc_key
-aws cloudformation create-stack --stack-name N-TIER-APP-$counter \
---template-body file:///home/aws/projects/cloudFormation/n-tier-app/n-tier-app.json \
---capabilities CAPABILITY_NAMED_IAM \
---parameters ParameterKey=KeyName,ParameterValue=n-tier-key \
---profile $PROFILE
 
+# N-Tier Application Stack Creation Script
+# Usage: ./create-stack.sh [demo|poc|rnd|devops] [key-name]
+
+ENVIRONMENT=${1:-demo}
+KEY_NAME=${2:-demo_key}
+STACK_NAME="N-TIER-APP-${ENVIRONMENT}-$(date +%m%d)"
+
+echo "Creating CloudFormation stack: $STACK_NAME"
+echo "Environment: $ENVIRONMENT"
+echo "Key Name: $KEY_NAME"
+
+# Create the stack
+aws cloudformation create-stack \
+  --stack-name $STACK_NAME \
+  --template-body file://n-tier-app.json \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameters ParameterKey=KeyName,ParameterValue=$KEY_NAME \
+               ParameterKey=EnvName,ParameterValue=$ENVIRONMENT
+
+if [ $? -eq 0 ]; then
+    echo "Stack creation initiated successfully"
+    echo $STACK_NAME > stack-id-${ENVIRONMENT}.txt
+    ln -fs ./stack-id-${ENVIRONMENT}.txt stack-id.txt
+    echo "Stack ID saved to stack-id-${ENVIRONMENT}.txt"
+    echo "Symbolic link created: stack-id.txt -> stack-id-${ENVIRONMENT}.txt"
+    
+    echo "Monitoring stack creation..."
+    aws cloudformation wait stack-create-complete --stack-name $STACK_NAME
+    
+    if [ $? -eq 0 ]; then
+        echo "Stack created successfully!"
+        echo "Getting stack outputs..."
+        aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs'
+    else
+        echo "Stack creation failed or timed out"
+        exit 1
+    fi
+else
+    echo "Failed to initiate stack creation"
+    exit 1
+fi

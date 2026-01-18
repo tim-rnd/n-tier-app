@@ -1,7 +1,6 @@
 {
-  "Transform": "AWS::Serverless-2016-10-31",
-  "Description": "N-Tier Application with VPC, ALB, ASG, Aurora MySQL Cluster, and Bastion Host",
-
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Migrated N-Tier Application with VPC, ALB, ASG, Aurora MySQL Cluster, and Bastion Host - Modern Best Practices",
   "Parameters": {
     "EnvName": {
       "Description": "Environment name prefix",
@@ -11,37 +10,37 @@
     "VpcCidr": {
       "Description": "VPC CIDR block",
       "Type": "String",
-      "Default": "10.0.0.0/16"
+      "Default": "10.192.0.0/16"
     },
     "PublicSubnet1CIDR": {
       "Description": "Public subnet 1 CIDR",
       "Type": "String",
-      "Default": "10.0.1.0/24"
+      "Default": "10.192.10.0/24"
     },
     "PublicSubnet2CIDR": {
       "Description": "Public subnet 2 CIDR",
       "Type": "String",
-      "Default": "10.0.2.0/24"
+      "Default": "10.192.11.0/24"
     },
     "AppSubnet1CIDR": {
       "Description": "Application subnet 1 CIDR",
       "Type": "String",
-      "Default": "10.0.3.0/24"
+      "Default": "10.192.20.0/24"
     },
     "AppSubnet2CIDR": {
       "Description": "Application subnet 2 CIDR",
       "Type": "String",
-      "Default": "10.0.4.0/24"
+      "Default": "10.192.21.0/24"
     },
     "DBSubnet1CIDR": {
       "Description": "Database subnet 1 CIDR",
       "Type": "String",
-      "Default": "10.0.5.0/24"
+      "Default": "10.192.30.0/24"
     },
     "DBSubnet2CIDR": {
       "Description": "Database subnet 2 CIDR",
       "Type": "String",
-      "Default": "10.0.6.0/24"
+      "Default": "10.192.31.0/24"
     },
     "KeyName": {
       "Description": "EC2 Key Pair name for SSH access",
@@ -50,17 +49,23 @@
     "InstanceType": {
       "Description": "EC2 instance type",
       "Type": "String",
-      "Default": "t3.micro",
+      "Default": "t3.small",
       "AllowedValues": ["t3.micro", "t3.small", "t3.medium", "t3.large"]
     },
     "DBInstanceClass": {
       "Description": "Aurora MySQL instance class",
       "Type": "String",
-      "Default": "db.t3.medium",
+      "Default": "db.r5.large",
       "AllowedValues": ["db.t3.medium", "db.t3.large", "db.r5.large"]
+    },
+    "AppServerCapacity": {
+      "Description": "Initial number of web server instances",
+      "Type": "Number",
+      "Default": "2",
+      "MinValue": "1",
+      "MaxValue": "5"
     }
   },
-
   "Resources": {
     "VPC": {
       "Type": "AWS::EC2::VPC",
@@ -76,7 +81,6 @@
         ]
       }
     },
-
     "InternetGateway": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
@@ -125,7 +129,6 @@
         ]
       }
     },
-
     "AppSubnet1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -154,7 +157,6 @@
         ]
       }
     },
-
     "DBSubnet1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -183,7 +185,6 @@
         ]
       }
     },
-
     "NatGateway1EIP": {
       "Type": "AWS::EC2::EIP",
       "DependsOn": "AttachGateway",
@@ -236,7 +237,6 @@
         ]
       }
     },
-
     "PublicRouteTable": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
@@ -298,7 +298,6 @@
         "NatGatewayId": {"Ref": "NatGateway2"}
       }
     },
-
     "PublicSubnet1RouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
@@ -341,7 +340,6 @@
         "RouteTableId": {"Ref": "PrivateRouteTable2"}
       }
     },
-
     "SSMRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -470,7 +468,6 @@
         ]
       }
     },
-
     "ApplicationLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
@@ -523,7 +520,6 @@
         ]
       }
     },
-
     "WebServerLaunchTemplate": {
       "Type": "AWS::EC2::LaunchTemplate",
       "Properties": {
@@ -540,7 +536,7 @@
           ],
           "UserData": {
             "Fn::Base64": {
-              "Fn::Sub": "#!/bin/bash\nyum update -y\nyum install -y httpd\necho '<h1>Hello from ${EnvName} Web Server</h1>' > /var/www/html/index.html\nsystemctl start httpd\nsystemctl enable httpd\n"
+              "Fn::Sub": "#!/bin/bash\nyum update -y\nyum install -y httpd\nTOKEN=`curl -X PUT \"http://169.254.169.254/latest/api/token\" -H \"X-aws-ec2-metadata-token-ttl-seconds: 21600\"`\nINSTANCE_ID=`curl -H \"X-aws-ec2-metadata-token: $TOKEN\" http://169.254.169.254/latest/meta-data/instance-id`\nRANDOM_COLOR=$(printf \"%06x\" $(($RANDOM%(255-0)*255*255)))\necho \"<html><body><h1><span style=\\\"color:#$RANDOM_COLOR\\\">Hello from ${EnvName} Web Server $INSTANCE_ID</span></h1><p>This server acts as an N-Tier-Application Apache http server</p></body></html>\" > /var/www/html/index.html\nsystemctl start httpd\nsystemctl enable httpd\n"
             }
           },
           "TagSpecifications": [
@@ -557,7 +553,6 @@
         }
       }
     },
-
     "WebServerASG": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
@@ -569,9 +564,9 @@
           "LaunchTemplateId": {"Ref": "WebServerLaunchTemplate"},
           "Version": {"Fn::GetAtt": ["WebServerLaunchTemplate", "LatestVersionNumber"]}
         },
-        "MinSize": "2",
-        "MaxSize": "4",
-        "DesiredCapacity": "2",
+        "MinSize": "1",
+        "MaxSize": "5",
+        "DesiredCapacity": {"Ref": "AppServerCapacity"},
         "TargetGroupARNs": [
           {"Ref": "ALBTargetGroup"}
         ],
@@ -584,7 +579,6 @@
         ]
       }
     },
-
     "DBSubnetGroup": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
@@ -632,6 +626,7 @@
         "BackupRetentionPeriod": 7,
         "PreferredBackupWindow": "03:00-04:00",
         "PreferredMaintenanceWindow": "sun:04:00-sun:05:00",
+        "DeletionProtection": false,
         "Tags": [
           {
             "Key": "Name",
@@ -693,7 +688,6 @@
       }
     }
   },
-
   "Outputs": {
     "LoadBalancerDNS": {
       "Description": "DNS name of the Application Load Balancer",
