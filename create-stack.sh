@@ -2,6 +2,10 @@
 
 # N-Tier Application Stack Creation Script
 # Usage: ./create-stack.sh [demo|poc|rnd|devops] [key-name]
+export AWS_ACCESS_KEY_ID=ACCESS-KEY
+export AWS_SECRET_ACCESS_KEY=SECRET-ACCESS-KEY
+export AWS_SESSION_TOKEN=
+export AWS_DEFAULT_REGION=us-west-2
 
 ENVIRONMENT=${1:-demo}
 KEY_NAME=${2:-demo_key}

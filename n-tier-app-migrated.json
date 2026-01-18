@@ -44,7 +44,8 @@
     },
     "KeyName": {
       "Description": "EC2 Key Pair name for SSH access",
-      "Type": "AWS::EC2::KeyPair::KeyName"
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Default": "Demo"
     },
     "InstanceType": {
       "Description": "EC2 instance type",
@@ -525,7 +526,7 @@
       "Properties": {
         "LaunchTemplateName": {"Fn::Sub": "${EnvName}-WebServer-LT"},
         "LaunchTemplateData": {
-          "ImageId": "ami-0c00eacddaea828c6",
+          "ImageId": "ami-00a8151272c45cd8e",
           "InstanceType": {"Ref": "InstanceType"},
           "KeyName": {"Ref": "KeyName"},
           "IamInstanceProfile": {
@@ -668,7 +669,7 @@
     "BastionHost": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-0c00eacddaea828c6",
+        "ImageId": "ami-00a8151272c45cd8e",
         "InstanceType": "t3.micro",
         "KeyName": {"Ref": "KeyName"},
         "SubnetId": {"Ref": "PublicSubnet1"},
